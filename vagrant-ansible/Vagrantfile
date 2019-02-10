@@ -1,0 +1,15 @@
+Vagrant.configure("2") do |config|
+  # Define what image to use
+  config.vm.box = "ubuntu/xenial64"
+
+  # Shared folder
+  config.vm.synced_folder ".", "/project"
+
+  # Install ansible on vagrant vm
+  config.vm.provision "shell", path: "install-ansible.sh"
+
+  # Run ansible inside vagrant vm
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+end

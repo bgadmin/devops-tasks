@@ -1,0 +1,4 @@
+- name: Configure vagrant vm
+  hosts: all
+  roles:
+    - open-files

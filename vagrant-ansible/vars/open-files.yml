@@ -1,0 +1,5 @@
+limits_file_path: "/etc/security/limits.conf"
+user: "vagrant"
+open-files-limit-low: "700"
+open-files-limit-default: "1024"
+open_files_limit_high: "500000"

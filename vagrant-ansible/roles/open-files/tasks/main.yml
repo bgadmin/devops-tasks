@@ -1,0 +1,59 @@
+# Check the user (we need to check the user since file limits are global and per user 
+# We are not going to change global limits for file descriptors
+- name: Include variables
+  include_vars: open-files.yml
+
+# Show limits
+- name: Show file descriptor limits
+  shell: cat /proc/sys/fs/file-max # Had some problems with using command module with args when running as provisioner in vagrant therefor we use shell
+  register: limit
+
+- debug: msg="{{ limit.stdout }}"
+
+# System wide solution
+- name: Change open files system wide 
+  template:
+    src: files/sysctl.conf.j2
+    dest: /etc/sysctl.conf
+  become: yes
+
+# Apply changes immediately
+- name: Apply changes immediately
+  command: sysctl -p
+  become: yes
+
+# Show new file descriptor limits
+- name: Show new file descriptor limits
+  shell: cat /proc/sys/fs/file-max 
+  register: limit1
+
+- debug: msg="{{ limit1.stdout }}"
+
+
+# This can be done for per user / session and with reboot so we comment it out (nice to have solution)
+
+#Change limit to higher rate by copying limits.conf file
+# - name: Copy limits.conf configuration file
+#   template:
+#     src: files/limits.conf.j2
+#     dest: "{{ limits_file_path }}"
+#   become: true
+
+# - name: Reboot box if kernel/libs updated and requested by the system
+#   shell: sleep 10 && /sbin/shutdown -r now 'Rebooting box to update system libs/kernel as needed' 
+#   args:
+#       removes: /var/run/reboot-required
+#   async: 300
+#   poll: 0
+#   ignore_errors: true
+
+# - name: Wait for system to become reachable again
+#   wait_for_connection:
+#       delay: 60
+#       timeout: 300 
+
+
+
+
+
+
